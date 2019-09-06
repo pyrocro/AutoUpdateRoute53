@@ -14,10 +14,11 @@ RUN ls /usr/src/app/build/AutoUpdateRoute53/bin/Debug
 
 #FROM scratch
 FROM mono:latest
-ENV DOMAIN_NAME=xxx
-ENV HOSTING_ZONE_ID=xxx
-ENV ACCESS_KEY_ID=xxx
-ENV SECRET_KEY=xxx
+ENV DOMAIN_NAME="xxx"
+ENV HOSTING_ZONE_ID="xxx"
+ENV ACCESS_KEY_ID="xxx"
+ENV SECRET_KEY="xxx"
+ENV SYNC_EVERY_SECONDS="xxx"
 WORKDIR /app/
 COPY --from=builder /usr/src/app/build/AutoUpdateRoute53/bin/ ./
 RUN pwd

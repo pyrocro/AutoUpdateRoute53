@@ -16,19 +16,24 @@ namespace AutoUpdateRoute53
     {
         static void Main(string[] args)
         {
-            string domainName = "8codebubble.com"; 
-            string hostingZoneId = "/hostedzone/Z1WNQ8M9WYMDH6";
+            /*string domainName = "8codebubble.com";
+            string hostingZoneId = "Z1WNQ8M9WYMDH6";
             string accessKeyID = "AKIAWZUNZPANJ2LASLTG";
             string secretKey = "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";
-
-            /*string domainName = Environment.GetEnvironmentVariable("DOMAIN_NAME");
-            string hostingZoneId = Environment.GetEnvironmentVariable("HOSTING_ZONE_ID");
-            string accessKeyID = Environment.GetEnvironmentVariable("ACCESS_KEY_ID");
-            string secretKey = Environment.GetEnvironmentVariable("SECRET_KEY");*/
+            int syncEverySeconds = 15*1000;*/
 
             
+            string domainName = Environment.GetEnvironmentVariable("DOMAIN_NAME");
+            string hostingZoneId = Environment.GetEnvironmentVariable("HOSTING_ZONE_ID");
+            string accessKeyID = Environment.GetEnvironmentVariable("ACCESS_KEY_ID");
+            string secretKey = Environment.GetEnvironmentVariable("SECRET_KEY");
+            int syncEverySeconds = int.Parse(Environment.GetEnvironmentVariable("SYNC_EVERY_SECONDS").ToString())*1000; //15*1000;
+            
+
+
 
             var credentials = new BasicAWSCredentials(accessKeyID, secretKey);
+            //RegionEndpoint.GetBySystemName
 
             var route53Client = new AmazonRoute53Client(credentials, RegionEndpoint.USWest1);
             //[2] Create a hosted zone
@@ -40,22 +45,53 @@ namespace AutoUpdateRoute53
 
             };
 
-            string externalip = new WebClient().DownloadString("http://icanhazip.com");
-            Console.WriteLine(externalip);
-
+            string externalip = new WebClient().DownloadString("http://icanhazip.com").Trim(); ;
+            
 
             var zoneResponse = route53Client.GetHostedZone(zoneRequest);
             var listRecordSetRequest = new ListResourceRecordSetsRequest() { HostedZoneId = hostingZoneId, StartRecordType = RRType.A, StartRecordName = domainName };
             var listRecordSet = route53Client.ListResourceRecordSets(listRecordSetRequest);
-            foreach(var rs in listRecordSet.ResourceRecordSets)
+            while (true)
             {
-                if(rs.Type == RRType.A)
-                {
-
+                try
+                { 
+                    externalip = new WebClient().DownloadString("http://icanhazip.com").Trim();
                 }
-            }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error while getting external IP address from http://icanhazip.com \n"+e.Message);
+                }
 
-            Console.WriteLine("test");
+
+                foreach (var rs in listRecordSet.ResourceRecordSets)
+                {
+                    if (rs.Type == RRType.A)
+                    {
+                        Console.WriteLine("..." + rs.Name);
+                        foreach (var rr in rs.ResourceRecords)
+                        {
+                            if (rr.Value.Trim() != externalip.Trim())
+                            {
+                                Console.WriteLine("\n*\nExternal IP Address: " + externalip + "\n*");
+                                Console.WriteLine("Syncing A Records in hosting zone: " + zoneResponse.HostedZone.Name);
+                                Console.Write("......Updating Ip address with(" + externalip + ")");
+                                updateRecordSet(route53Client, domainName, externalip, zoneResponse);
+                            }
+                            else
+                            {
+                                //Console.Write("......No Change Value(" + rr.Value + ") external ip(" + externalip + ") ");
+                            }
+                        }
+                    }
+                }
+                Thread.Sleep(syncEverySeconds);
+            }
+        }
+
+        static void updateRecordSet(AmazonRoute53Client route53Client, string domainName, string externalip, GetHostedZoneResponse zoneResponse)
+        {
+
+            //Console.WriteLine("test");
 
             //[3] Create a resource record set change batch
             var recordSet = new ResourceRecordSet()
@@ -72,7 +108,7 @@ namespace AutoUpdateRoute53
             var change1 = new Change()
             {
                 ResourceRecordSet = recordSet,
-                Action = ChangeAction.CREATE
+                Action = ChangeAction.UPSERT
             };
 
             var changeBatch = new ChangeBatch()
@@ -94,7 +130,7 @@ namespace AutoUpdateRoute53
             {
                 Id = recordsetResponse.ChangeInfo.Id
             };
-
+            
             while (ChangeStatus.PENDING ==
               route53Client.GetChange(changeRequest).ChangeInfo.Status)
             {
@@ -103,8 +139,10 @@ namespace AutoUpdateRoute53
             }
 
             Console.WriteLine("Change is complete.");
-            Console.ReadKey();
+            //Console.ReadKey();
         }
-
     }
+
 }
+
+
