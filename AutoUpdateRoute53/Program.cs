@@ -14,6 +14,21 @@ namespace AutoUpdateRoute53
 {
     class Program
     {
+        static string getExternalIPAddress()
+        {
+            string externalip = string.Empty;
+
+            try
+            {
+                externalip = new WebClient().DownloadString("http://icanhazip.com").Trim();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error while getting external IP address from http://icanhazip.com \n" + e.Message);
+            }
+            return externalip;
+        }
         static void Main(string[] args)
         {
             /*string domainName = "8codebubble.com";
@@ -22,20 +37,29 @@ namespace AutoUpdateRoute53
             string secretKey = "hSDNzGR824kwb9ASpggc7nDcbVkRz9e4Zj72DJbK";
             int syncEverySeconds = 15*1000;*/
 
-            
+
+
+            string awsRegion = Environment.GetEnvironmentVariable("AWS_REGION");
             string domainName = Environment.GetEnvironmentVariable("DOMAIN_NAME");
             string hostingZoneId = Environment.GetEnvironmentVariable("HOSTING_ZONE_ID");
             string accessKeyID = Environment.GetEnvironmentVariable("ACCESS_KEY_ID");
             string secretKey = Environment.GetEnvironmentVariable("SECRET_KEY");
             int syncEverySeconds = int.Parse(Environment.GetEnvironmentVariable("SYNC_EVERY_SECONDS").ToString())*1000; //15*1000;
-            
+
+            //Print all regions 
+            var tmp = RegionEndpoint.EnumerableAllRegions;
+            foreach (var i in tmp)
+            {
+                Console.WriteLine(i.DisplayName + "\t\t" + i.SystemName);
+            }
+            Console.WriteLine("********************************************************************************");
 
 
 
             var credentials = new BasicAWSCredentials(accessKeyID, secretKey);
             //RegionEndpoint.GetBySystemName
 
-            var route53Client = new AmazonRoute53Client(credentials, RegionEndpoint.USWest1);
+            var route53Client = new AmazonRoute53Client(credentials, RegionEndpoint.GetBySystemName(awsRegion));//USWest1);
             //[2] Create a hosted zone
             var zoneRequest = new GetHostedZoneRequest()
             {
@@ -44,24 +68,16 @@ namespace AutoUpdateRoute53
                 //CallerReference = "my_change_request"                 
 
             };
-
-            string externalip = new WebClient().DownloadString("http://icanhazip.com").Trim(); ;
-            
+            string externalip = String.Empty;
+            // Initial Retrival of external IP address 
+            externalip = getExternalIPAddress();
 
             var zoneResponse = route53Client.GetHostedZone(zoneRequest);
             var listRecordSetRequest = new ListResourceRecordSetsRequest() { HostedZoneId = hostingZoneId, StartRecordType = RRType.A, StartRecordName = domainName };
             var listRecordSet = route53Client.ListResourceRecordSets(listRecordSetRequest);
             while (true)
             {
-                try
-                { 
-                    externalip = new WebClient().DownloadString("http://icanhazip.com").Trim();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error while getting external IP address from http://icanhazip.com \n"+e.Message);
-                }
-
+                externalip = getExternalIPAddress();
 
                 foreach (var rs in listRecordSet.ResourceRecordSets)
                 {
@@ -79,7 +95,7 @@ namespace AutoUpdateRoute53
                             }
                             else
                             {
-                                //Console.Write("......No Change Value(" + rr.Value + ") external ip(" + externalip + ") ");
+                                Console.Write("......No Change Value(" + rr.Value + ") external ip(" + externalip + ") ");
                             }
                         }
                     }
