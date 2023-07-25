@@ -31,14 +31,7 @@ namespace AutoUpdateRoute53
         }
         static void Main(string[] args)
         {
-            /*string domainName = "8codebubble.com";
-            string hostingZoneId = "Z1WNQ8M9WYMDH6";
-            string accessKeyID = "AKIAWZUNZPANJ2LASLTG";
-            string secretKey = "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";
-            int syncEverySeconds = 15*1000;*/
-
-
-
+            //Load environmet variabels 
             string awsRegion = Environment.GetEnvironmentVariable("AWS_REGION");
             string domainName = Environment.GetEnvironmentVariable("DOMAIN_NAME");
             string hostingZoneId = Environment.GetEnvironmentVariable("HOSTING_ZONE_ID");

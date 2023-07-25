@@ -1,0 +1,72 @@
+schemaVersion: 2.1.0
+metadata:
+  name: mono
+  displayName: mono
+  description: mono msbuild
+  icon: https://developers.redhat.com/sites/default/files/styles/large/public/dotnet-logo3x3.jpg
+  language: dotnet
+  projectType: dotnet
+  tags:
+    - dotnet
+  version: 1.0.0
+
+#starterProjects:
+#  - name: s2i-example
+#    git:
+#      checkoutFrom:
+#        remote: origin
+#        revision: dotnet-6.0
+#      remotes:
+#        origin: https://github.com/redhat-developer/s2i-dotnetcore-ex
+#    subDir: app
+
+
+components:
+- name: dotnet
+  container:
+    memoryLimit: 50Mi
+    image:  mono:latest
+    mountSources: true
+    env:
+      - name: DOMAIN_NAME
+        value: "8codebubble.com"
+      - name: HOSTING_ZONE_ID
+        value: "/hostedzone/Z1WNQ8M9WYMDH6"
+      - name: ACCESS_KEY_ID
+        value: "AKIAWZUNZPANJ2LASLTG"
+      - name: SECRET_KEY
+        value: "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"
+      - name: SYNC_EVERY_SECONDS
+        value: "30"
+      - name: AWS_REGION
+        value: us-west-1
+      - name: CONFIGURATION
+        value: Debug
+      - name: STARTUP_PROJECT
+        value: AutoUpdateRoute53.sln
+      - name: ASPNETCORE_ENVIRONMENT
+        value: Development
+      - name: ASPNETCORE_URLS
+        value: http://*:80
+    endpoints:
+    - name: http-80
+      targetPort: 80
+
+commands:
+- id: build
+  exec:
+    workingDir: ${PROJECTS_ROOT}
+    commandLine: kill $(pidof msbuild); nuget restore AutoUpdateRoute53.sln; msbuild AutoUpdateRoute53.sln /p:Configuration=Debug;pwd;
+    component: dotnet    
+    group:
+      isDefault: true
+      kind: build
+
+- id: run
+  exec:
+    workingDir: ${PROJECTS_ROOT}
+    commandLine: mono AutoUpdateRoute53/bin/Debug/AutoUpdateRoute53.exe
+    component: dotnet
+    group:
+      isDefault: true
+      kind: run

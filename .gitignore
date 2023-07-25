@@ -259,3 +259,5 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+c:\dev_projects\source\repos\AutoUpdateRoute53\.odo\env
+.odo\odo-file-index.json
