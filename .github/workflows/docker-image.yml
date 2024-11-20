@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "master" ]
 env:
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/auto-update-route53
+  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/auto-update-route53
 
 jobs:
   docker:
@@ -21,7 +21,7 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           
       - name: Extract metadata
