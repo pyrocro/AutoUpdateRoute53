@@ -1,4 +1,4 @@
-FROM mono:latest as builder
+FROM mono:latest AS builder
 #RUN mkdir -p release 
 WORKDIR /usr/src/app/build/
 COPY ["./","./"]
