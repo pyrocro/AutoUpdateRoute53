@@ -48,6 +48,7 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           # Docker Hub password or Personal Access Token with read/write/delete scope
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
           # Docker Hub repository in the format `<namespace>/<name>` Default: `github.repository`      
           #repository: # optional
           # Docker Hub repository short description
