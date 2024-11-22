@@ -48,7 +48,7 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           # path to readme markdown
-          readme: /README.md
+          readme: ./README.md
           # list of repositories to update (without username)
           repository: ${{ vars.DOCKERHUB_USERNAME }}/auto-update-route53
           
