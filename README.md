@@ -16,6 +16,7 @@ Self-hosted services behind non-static IP address AKA your normal internet home 
 <li>SECRET_KEY <i>{secret key of the AWS account-obtain this when you created the user on AWS}</i></li>
 
 <li>SYNC_EVERY_SECONDS <I>{Check for mismatch of external IP address interval in seconds}</i></li>
+<li>RECORD_IDS <I>{Only update A record(s) listed here. You can have 1 or multiple seperated by comma eg. RECORD_IDS= ID1  eg.2 RECORD_IDS= ID1,ID2,ID3 }</i></li>
 </ul>
 
 <br/>
