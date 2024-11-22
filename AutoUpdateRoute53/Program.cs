@@ -52,14 +52,14 @@ namespace AutoUpdateRoute53
 
 
 
-            var credentials = new BasicAWSCredentials(accessKeyID, secretKey);
+            var credentials = new BasicAWSCredentials(accessKeyID.Trim(), secretKey.Trim());
             //RegionEndpoint.GetBySystemName
 
-            var route53Client = new AmazonRoute53Client(credentials, RegionEndpoint.GetBySystemName(awsRegion));
+            var route53Client = new AmazonRoute53Client(credentials, RegionEndpoint.GetBySystemName(awsRegion.Trim()));
             //[2] Create a hosted zone
             var zoneRequest = new GetHostedZoneRequest()
             {
-                Id = hostingZoneId
+                Id = hostingZoneId.Trim()
                 //Name = domainName,
                 //CallerReference = "my_change_request"                 
 
@@ -68,7 +68,7 @@ namespace AutoUpdateRoute53
             external_IP_Address = getExternalIPAddress(); // Initial Retrival of external IP address 
 
             var zoneResponse = route53Client.GetHostedZone(zoneRequest);
-            var listRecordSetRequest = new ListResourceRecordSetsRequest() { HostedZoneId = hostingZoneId, StartRecordType = RRType.A, StartRecordName = domainName };
+            var listRecordSetRequest = new ListResourceRecordSetsRequest() { HostedZoneId = hostingZoneId.Trim(), StartRecordType = RRType.A, StartRecordName = domainName };
             var listRecordSet = route53Client.ListResourceRecordSets(listRecordSetRequest);
             var all_A_Records = listRecordSet.ResourceRecordSets.Where(a => a.Type == RRType.A); //get only A records.
             while (true)
@@ -91,7 +91,7 @@ namespace AutoUpdateRoute53
                     {                        
                         foreach (var ri in recordIDList)
                         {
-                            if (rs.SetIdentifier == ri)
+                            if (rs.SetIdentifier == ri.Trim())
                             { // Only attempt change if the RecordID on Route53 Matches the provided list of name(s) in                             
                                 updateRecordSet(route53Client, rs, external_IP_Address, zoneResponse);
                             }
