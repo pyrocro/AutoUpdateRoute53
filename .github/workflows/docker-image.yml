@@ -39,17 +39,25 @@ jobs:
             ${{ steps.meta.outputs.tags }}
             ${{ env.IMAGE_NAME }}:latest
           annotations: ${{ steps.meta.outputs.annotations }}
-      - name: Dockerhub Readme
+      - name: Docker Hub Description
         # You may pin to the exact commit or the version.
-        # uses: ms-jpq/sync-dockerhub-readme@e2991ea1ba48832e73555cdbd5b82f5a2e91ee9b
-        uses: ms-jpq/sync-dockerhub-readme@v1
+        # uses: peter-evans/dockerhub-description@e98e4d1628a5f3be2be7c231e50981aee98723ae
+        uses: peter-evans/dockerhub-description@v4.0.0
         with:
-          # Dockerhub username
+          # Docker Hub username
           username: ${{ vars.DOCKERHUB_USERNAME }}
+          # Docker Hub password or Personal Access Token with read/write/delete scope
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          # path to readme markdown
-          readme: ./README.md
-          # list of repositories to update (without username)
-          repository: ${{ vars.DOCKERHUB_USERNAME }}/auto-update-route53
+          # Docker Hub repository in the format `<namespace>/<name>` Default: `github.repository`      
+          #repository: # optional
+          # Docker Hub repository short description
+          #short-description: # optional
+          # Path to the repository readme Default: `./README.md`      
+          #readme-filepath: # optional
+          # Enables completion of relative URLs to absolute ones Default: `false`      
+          #enable-url-completion: # optional
+          # File extensions that will be treated as images Default: `bmp,gif,jpg,jpeg,png,svg,webp`      
+          #image-extensions: # optional
+          
           
             
