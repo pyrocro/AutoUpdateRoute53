@@ -35,7 +35,7 @@ jobs:
           pass: ${{ secrets.DOCKERHUB_TOKEN }}
           # Docker Hub repository path in the form of: <namespace>/<name>.  Gets converted to lower case. Only needed, if different than Github's.
       
-          #slug: # optional
+          slug: ${{env.IMAGE_NAME}}
           # Optional relative path to the README.md file.  If not provided, one at repo root used.
           #readme: # optional
           # Docker Hub repo's short description to set.  If set to just `true`, Github's desription is used. If omitted, no action is performed.      
