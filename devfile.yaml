@@ -29,13 +29,13 @@ components:
     mountSources: true
     env:
       - name: DOMAIN_NAME
-        value: "8codebubble.com"
+        value: "------.com"
       - name: HOSTING_ZONE_ID
-        value: "/hostedzone/Z1WNQ8M9WYMDH6"
+        value: "/hostedzone/--------"
       - name: ACCESS_KEY_ID
-        value: "AKIAWZUNZPANJ2LASLTG"
+        value: "----------"
       - name: SECRET_KEY
-        value: "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"
+        value: "------"
       - name: SYNC_EVERY_SECONDS
         value: "30"
       - name: AWS_REGION
