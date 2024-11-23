@@ -1,0 +1,45 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  #pull_request:
+  #  branches: [ "master" ]
+  
+env:
+  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/auto-update-route53
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    #runs-on: self-hosted
+    steps:
+      - name: check for files 1
+        run: ls && pwd
+      - name: Checkout Readme file
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            README.md
+          sparse-checkout-cone-mode: false
+      - name: check for files 
+        run: ls && pwd     
+      - name: Docker Hub README & description sync
+        # You may pin to the exact commit or the version.
+        # uses: meeDamian/sync-readme@82715041300710d9be7c726c9d6c683b70451087
+        uses: meeDamian/sync-readme@v1.0.6
+        with:
+          # Docker Hub username.  Set only if different than on Github.
+          user: ${{ vars.DOCKERHUB_USERNAME }}
+          # Docker Hub password
+          pass: ${{ secrets.DOCKERHUB_TOKEN }}
+          # Docker Hub repository path in the form of: <namespace>/<name>.  Gets converted to lower case. Only needed, if different than Github's.      
+          slug: ${{env.IMAGE_NAME}}
+          # Optional relative path to the README.md file.  If not provided, one at repo root used.
+          #readme: # optional
+          # Docker Hub repo's short description to set.  If set to just `true`, Github's desription is used. If omitted, no action is performed.      
+          #description: # optional
+          
+          
+          
+            
