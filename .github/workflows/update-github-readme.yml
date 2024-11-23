@@ -16,12 +16,12 @@ jobs:
     steps:
       - name: check for files 1
         run: ls && pwd
-      - name: Checkout Readme file
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            README.md
-          sparse-checkout-cone-mode: false
+      #- name: Checkout Readme file
+      #  uses: actions/checkout@v4
+      #  with:
+      #    sparse-checkout: |
+      #      README.md
+      #    sparse-checkout-cone-mode: false
       - name: check for files 
         run: ls && pwd     
       - name: Docker Hub README & description sync
