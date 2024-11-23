@@ -23,27 +23,24 @@ jobs:
             README.md
           sparse-checkout-cone-mode: false
       - name: check for files 
-        run: ls && pwd
-      - name: Docker Hub Description
+        run: ls && pwd     
+      - name: Docker Hub README & description sync
         # You may pin to the exact commit or the version.
-        # uses: peter-evans/dockerhub-description@e98e4d1628a5f3be2be7c231e50981aee98723ae
-        uses: peter-evans/dockerhub-description@v4.0.0
+        # uses: meeDamian/sync-readme@82715041300710d9be7c726c9d6c683b70451087
+        uses: meeDamian/sync-readme@v1.0.6
         with:
-          # Docker Hub username
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          # Docker Hub password or Personal Access Token with read/write/delete scope
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          # Docker Hub username.  Set only if different than on Github.
+          user: ${{ vars.DOCKERHUB_USERNAME }}
+          # Docker Hub password
+          pass: ${{ secrets.DOCKERHUB_TOKEN }}
+          # Docker Hub repository path in the form of: <namespace>/<name>.  Gets converted to lower case. Only needed, if different than Github's.
+      
+          #slug: # optional
+          # Optional relative path to the README.md file.  If not provided, one at repo root used.
+          #readme: # optional
+          # Docker Hub repo's short description to set.  If set to just `true`, Github's desription is used. If omitted, no action is performed.      
+          #description: # optional
           
-          # Docker Hub repository in the format `<namespace>/<name>` Default: `github.repository`      
-          #repository: # optional
-          # Docker Hub repository short description
-          #short-description: # optional
-          # Path to the repository readme Default: `./README.md`      
-          readme-filepath: ./README.md # optional '/home/runner/work/AutoUpdateRoute53/AutoUpdateRoute53/README.md'
-          # Enables completion of relative URLs to absolute ones Default: `false`      
-          #enable-url-completion: # optional
-          # File extensions that will be treated as images Default: `bmp,gif,jpg,jpeg,png,svg,webp`      
-          #image-extensions: # optional
           
           
             
