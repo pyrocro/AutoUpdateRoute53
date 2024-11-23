@@ -35,7 +35,7 @@ jobs:
           # Docker Hub repository short description
           #short-description: # optional
           # Path to the repository readme Default: `./README.md`      
-          readme-filepath: ./README.md # optional '/home/runner/work/AutoUpdateRoute53/AutoUpdateRoute53/README.md'
+          readme-filepath: README.md # optional '/home/runner/work/AutoUpdateRoute53/AutoUpdateRoute53/README.md'
           # Enables completion of relative URLs to absolute ones Default: `false`      
           #enable-url-completion: # optional
           # File extensions that will be treated as images Default: `bmp,gif,jpg,jpeg,png,svg,webp`      
