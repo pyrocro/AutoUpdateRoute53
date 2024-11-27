@@ -39,14 +39,14 @@ namespace AutoUpdateRoute53
             string secretKey = Environment.GetEnvironmentVariable("SECRET_KEY");
             int syncEverySeconds = int.Parse(Environment.GetEnvironmentVariable("SYNC_EVERY_SECONDS").ToString())*1000; //15*1000;
             string recordIDStr = Environment.GetEnvironmentVariable("RECORD_IDS");
-            string[] recordIDList = recordIDStr != null ? recordIDStr.Split(','): new string[] { }; //Ternary IF just because.
+            string[] recordIDList = recordIDStr != null ? recordIDStr.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries) : new string[] { }; //Ternary IF. in case recordIDStr is empty.
 
 
             //Print all regions 
             var tmp = RegionEndpoint.EnumerableAllRegions;
             foreach (var i in tmp)
             {
-                Console.WriteLine(i.DisplayName + "\t\t" + i.SystemName);
+                Console.WriteLine(i.DisplayName + "\t\t\t" + i.SystemName);
             }
             Console.WriteLine("********************************************************************************");
 
@@ -71,6 +71,12 @@ namespace AutoUpdateRoute53
             var listRecordSetRequest = new ListResourceRecordSetsRequest() { HostedZoneId = hostingZoneId.Trim(), StartRecordType = RRType.A, StartRecordName = domainName };
             var listRecordSet = route53Client.ListResourceRecordSets(listRecordSetRequest);
             var all_A_Records = listRecordSet.ResourceRecordSets.Where(a => a.Type == RRType.A); //get only A records.
+            Console.WriteLine("List of all Records");
+            foreach (var a in all_A_Records)
+            {
+                Console.WriteLine(a.Name);
+            }
+            Console.WriteLine("********************************************************************************");
             while (true)
             {
                 external_IP_Address = getExternalIPAddress();
@@ -80,10 +86,11 @@ namespace AutoUpdateRoute53
                 }
                 else //then there is more than 1 A record and a more sophisticated sorting process needs to take place
                 {
-                    if (recordIDList.Length == 0) // if you reached here but the is no values in RECORD_IDS environment variable exit with message 
+                    if (recordIDList.Length == 0) // if you reached here but there is no values in RECORD_IDS environment variable exit with message 
                     {
                         Console.WriteLine("There is more than one A record present.");
                         Console.WriteLine("You must enter atleast 1 value in RECORD_IDS Enviroment variable to identify which A record to update .");
+                        Console.WriteLine("'RECORD ID' for a given record is set in the AWS Route53 Dashboard for any record that is not a 'simple routing'");
                         Console.WriteLine("eg 1. RECORD_IDS = \"name1\"   eg 2. RECORD_IDS = \"name1,name2,name3\"");
                         System.Environment.Exit(0);
                     }
@@ -106,7 +113,7 @@ namespace AutoUpdateRoute53
         {
             bool makeChangeFlag = false;
 
-            Console.Write("" + recordSet.Failover.ToString().Substring(0, 4) + "" + "-(" + recordSet.Name + ")" + "-(" + recordSet.SetIdentifier.Substring(0, 7) + ")"); 
+            Console.Write("\t"+"-" + recordSet.Failover + "" + "-(" + recordSet.Name + ")" + "-(" + recordSet.SetIdentifier + ")"); 
 
             if (recordSet.ResourceRecords == null) //In case resourceRocords IP address is empty
             {
