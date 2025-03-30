@@ -111,6 +111,16 @@ namespace AutoUpdateRoute53
         }
         static void updateRecordSet(AmazonRoute53Client route53Client, ResourceRecordSet recordSet, string externalip, GetHostedZoneResponse zoneResponse)
         {
+            // Get the current timestamp
+            DateTimeOffset timestamp = DateTimeOffset.Now;
+            // Get the time zone information
+            TimeZoneInfo localZone = TimeZoneInfo.Local;
+            string timeZone = localZone.DisplayName;
+            // Format the output
+            string formattedTimestamp = $"{timestamp:yyyy-MM-dd HH:mm:ss zzz}";
+            Console.Write($"Timestamp: {formattedTimestamp} ");
+
+
             bool makeChangeFlag = false;
 
             Console.Write("\t"+"-" + recordSet.Failover + "" + "-(" + recordSet.Name + ")" + "-(" + recordSet.SetIdentifier + ")"); 
